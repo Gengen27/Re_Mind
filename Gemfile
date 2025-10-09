@@ -66,3 +66,25 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# 追加するGem
+gem "devise"                # 認証
+gem "ruby-openai"          # OpenAI API
+gem "dotenv-rails"         # 環境変数
+gem "kaminari"             # ページネーション
+
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "bootsnap", require: false
+
+group :development, :test do
+  gem "debug", platforms: %i[ mri windows ]
+end
+
+group :development do
+  gem "web-console"
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+end
