@@ -23,5 +23,13 @@ module ReMind
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Set default locale to Japanese
+    config.i18n.default_locale = :ja
+    config.i18n.available_locales = [:ja, :en]
+    
+    # Set Tokyo timezone
+    config.time_zone = 'Tokyo'
+    config.active_record.default_timezone = :local
   end
 end
