@@ -9,4 +9,14 @@ Rails.application.routes.draw do
   get 'dashboard', to: 'dashboard#index'
   get 'analytics', to: 'dashboard#analytics'
   get 'reflection', to: 'dashboard#reflection'
+
+  # Posts (失敗ログ)
+  resources :posts do
+    member do
+      post :request_ai_evaluation
+    end
+    collection do
+      get :search
+    end
+  end
 end
