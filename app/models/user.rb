@@ -8,5 +8,18 @@ class User < ApplicationRecord
   
   validates :name, presence: true, length: { maximum: 50 }
   validates :mentor_personality, inclusion: { in: %w[gentle strict logical balanced] }
-  
+
+    # メンター人格の日本語名を返す
+  def mentor_personality_name
+    case mentor_personality
+    when 'gentle'
+      '優しい'
+    when 'strict'
+      '厳しい'
+    when 'logical'
+      '論理的'
+    when 'balanced'
+      'バランス型'
+    end
+  end
 end
