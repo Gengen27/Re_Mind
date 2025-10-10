@@ -16,4 +16,20 @@ class Post < ApplicationRecord
     where("title LIKE ? OR content LIKE ? OR cause LIKE ? OR solution LIKE ? OR learning LIKE ?", 
           "%#{keyword}%", "%#{keyword}%", "%#{keyword}%", "%#{keyword}%", "%#{keyword}%") if keyword.present?
   }
+  # AIスコアを取得（存在しない場合はnilを返す）
+  def score
+    ai_score&.total_score
+  end
   
+  # AI評価が必要かどうか
+  def needs_ai_evaluation?
+    !ai_evaluated && cause.present? && solution.present?
+  end
+
+  # AI評価を実行
+  def request_ai_evaluation
+    return false if ai_evaluated
+    
+    AiEvaluationService.new(self).evaluate
+  end
+end
