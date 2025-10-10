@@ -35,4 +35,11 @@ class User < ApplicationRecord
       count: scores.size
     }
   end
+
+    # カテゴリ別の平均スコアを取得
+  def category_average_scores
+    posts.joins(:ai_score, :category)
+         .group('categories.name')
+         .average('ai_scores.total_score')
+  end
 end
