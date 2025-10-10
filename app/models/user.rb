@@ -22,4 +22,17 @@ class User < ApplicationRecord
       'バランス型'
     end
   end
+
+    # スコアの統計情報を取得
+  def score_statistics
+    scores = posts.joins(:ai_score).pluck('ai_scores.total_score')
+    return nil if scores.empty?
+    
+    {
+      average: scores.sum / scores.size,
+      max: scores.max,
+      min: scores.min,
+      count: scores.size
+    }
+  end
 end
