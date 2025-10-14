@@ -1,0 +1,51 @@
+<div class="container" style="padding: 2rem 1rem;">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+      カテゴリ一覧
+    </h1>
+    <p class="text-gray-600">カテゴリ別に失敗ログを整理・分析</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+    <% @category_stats.each do |stat| %>
+      <% category = stat[:category] %>
+      <%= link_to category_path(category), class: "card", style: "text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;" do %>
+        <div style="border-left: 4px solid <%= category.color %>; padding-left: 1rem;">
+          <div class="flex items-center gap-3 mb-3" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="width: 48px; height: 48px; border-radius: 0.75rem; background-color: <%= category.color %>; opacity: 0.2;"></div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900" style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900);">
+                <%= category.name %>
+              </h3>
+              <p class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
+                <%= category.description %>
+              </p>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+            <div>
+              <div class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">投稿数</div>
+              <div class="text-2xl font-bold" style="font-size: 1.5rem; font-weight: 700; color: <%= category.color %>;">
+                <%= stat[:posts_count] %>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">平均スコア</div>
+              <div class="text-2xl font-bold" style="font-size: 1.5rem; font-weight: 700; color: <%= category.color %>;">
+                <%= stat[:average_score]&.round(1) || "—" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+</style>
