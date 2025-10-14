@@ -19,4 +19,18 @@ Rails.application.routes.draw do
       get :search
     end
   end
+
+  # Categories
+  resources :categories, only: [:index, :show]
+  
+  # User settings
+  resource :settings, only: [:show, :update]
+
+namespace :api do
+  namespace :v1 do
+    get 'dashboard/chart_data'
+  end
+end
+
+
 end
