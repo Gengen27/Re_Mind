@@ -1,0 +1,12 @@
+<% if resource.errors.any? %>
+  <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg" style="margin-bottom: 1rem; padding: 1rem; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 0.5rem;">
+    <h2 class="text-red-800 font-bold mb-2" style="color: #991B1B; font-weight: 700; margin-bottom: 0.5rem;">
+      <%= pluralize(resource.errors.count, "件のエラー") %>が発生しました
+    </h2>
+    <ul class="text-red-700 text-sm" style="color: #B91C1C; font-size: 0.875rem; padding-left: 1.25rem;">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
