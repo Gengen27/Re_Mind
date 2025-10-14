@@ -30,6 +30,6 @@ class Post < ApplicationRecord
   def request_ai_evaluation
     return false if ai_evaluated
     
-    AiEvaluationService.new(self).evaluate
+    ::AiEvaluationService.new(self).evaluate
   end
 end
