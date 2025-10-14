@@ -1,0 +1,129 @@
+<div class="container" style="padding: 2rem 1rem;">
+  <div class="max-w-3xl mx-auto" style="max-width: 48rem; margin: 0 auto;">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+        設定
+      </h1>
+      <p class="text-gray-600">アカウント情報とAIメンターの設定</p>
+    </div>
+
+    <!-- Profile Settings -->
+    <div class="card mb-6">
+      <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">
+        プロフィール設定
+      </h2>
+      
+      <%= form_with model: current_user, url: settings_path, method: :patch, local: true do |f| %>
+        <div class="form-group">
+          <%= f.label :name, "名前", class: "form-label" %>
+          <%= f.text_field :name, class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">メールアドレス</label>
+          <input type="email" value="<%= current_user.email %>" class="form-control" disabled>
+          <p class="text-xs text-gray-500 mt-1" style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.25rem;">
+            メールアドレスの変更は現在サポートされていません
+          </p>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :mentor_personality, "AIメンター人格", class: "form-label" %>
+          <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+            AIがフィードバックする際のトーンを選択できます
+          </p>
+          <%= f.select :mentor_personality, 
+                      [
+                        ["優しい（温かく励ますようなトーン）", "gentle"],
+                        ["厳しい（的確に改善点を指摘）", "strict"],
+                        ["論理的（客観的で冷静な分析）", "logical"],
+                        ["バランス型（良い点と改善点を公平に）", "balanced"]
+                      ],
+                      {},
+                      { class: "form-select" } %>
+        </div>
+
+        <div class="p-4 mb-4" style="padding: 1rem; background-color: #EEF2FF; border-radius: 0.5rem; border-left: 4px solid var(--primary); margin-bottom: 1rem;">
+          <h3 class="font-semibold mb-2" style="font-weight: 600; margin-bottom: 0.5rem; color: var(--primary);">
+            現在の設定: <%= current_user.mentor_personality_name %>
+          </h3>
+          <p class="text-sm text-gray-700" style="font-size: 0.875rem; color: var(--gray-700);">
+            <% case current_user.mentor_personality %>
+            <% when 'gentle' %>
+              AIは優しく温かい言葉遣いで、ポジティブな面を強調してフィードバックします。
+            <% when 'strict' %>
+              AIは厳しく的確に、改善点を明確に指摘してフィードバックします。
+            <% when 'logical' %>
+              AIは論理的で客観的に、データや事実に基づいてフィードバックします。
+            <% when 'balanced' %>
+              AIはバランスの取れた言葉遣いで、良い点と改善点の両方を公平に評価します。
+            <% end %>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label class="flex items-center" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <%= f.check_box :reminder_enabled %>
+            <span class="text-sm text-gray-700">リマインダー機能を有効にする</span>
+          </label>
+        </div>
+
+        <% if current_user.reminder_enabled %>
+          <div class="form-group">
+            <%= f.label :reminder_interval_days, "リマインダー間隔（日数）", class: "form-label" %>
+            <%= f.number_field :reminder_interval_days, min: 1, max: 30, class: "form-control" %>
+            <p class="text-xs text-gray-500 mt-1" style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.25rem;">
+              前回の投稿から指定した日数が経過すると通知されます
+            </p>
+          </div>
+        <% end %>
+
+        <div class="flex gap-3" style="display: flex; gap: 0.75rem;">
+          <%= f.submit "設定を保存", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Account Info -->
+    <div class="card">
+      <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">
+        アカウント情報
+      </h2>
+      
+      <div class="space-y-3" style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div class="flex justify-between py-3" style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+          <span class="text-gray-600">アカウント作成日</span>
+          <span class="font-semibold"><%= current_user.created_at.strftime('%Y年%m月%d日') %></span>
+        </div>
+        
+        <div class="flex justify-between py-3" style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+          <span class="text-gray-600">最終ログイン</span>
+          <span class="font-semibold"><%= current_user.current_sign_in_at&.strftime('%Y年%m月%d日 %H:%M') || "—" %></span>
+        </div>
+        
+        <div class="flex justify-between py-3" style="display: flex; justify-content: space-between; padding: 0.75rem 0;">
+          <span class="text-gray-600">総ログイン回数</span>
+          <span class="font-semibold"><%= current_user.sign_in_count %>回</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card mt-6" style="margin-top: 1.5rem; border: 2px solid var(--danger);">
+      <h2 class="text-xl font-bold mb-4 text-red-600" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--danger);">
+        危険な操作
+      </h2>
+      
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg" style="padding: 1rem; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 0.5rem;">
+        <p class="text-sm text-gray-700 mb-3" style="font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.75rem;">
+          アカウントを削除すると、すべての投稿データとAI評価結果が完全に削除されます。この操作は取り消せません。
+        </p>
+        <%= button_to "アカウントを削除", 
+                     registration_path(current_user), 
+                     method: :delete, 
+                     data: { confirm: "本当にアカウントを削除しますか？この操作は取り消せません。" },
+                     class: "btn btn-danger" %>
+      </div>
+    </div>
+  </div>
+</div>
