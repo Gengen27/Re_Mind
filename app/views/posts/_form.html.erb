@@ -1,0 +1,79 @@
+<%= form_with(model: post, local: true) do |f| %>
+  <% if post.errors.any? %>
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg" style="margin-bottom: 1rem; padding: 1rem; background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 0.5rem;">
+      <h2 class="text-red-800 font-bold mb-2" style="color: #991B1B; font-weight: 700; margin-bottom: 0.5rem;">
+        <%= pluralize(post.errors.count, "件のエラー") %>が発生しました
+      </h2>
+      <ul class="text-red-700 text-sm" style="color: #B91C1C; font-size: 0.875rem; padding-left: 1.25rem;">
+        <% post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, "タイトル", class: "form-label" %>
+    <%= f.text_field :title, class: "form-control", placeholder: "例: プロジェクトの締切に遅れてしまった", autofocus: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :category_id, "カテゴリ", class: "form-label" %>
+    <%= f.select :category_id, 
+                 options_from_collection_for_select(@categories, :id, :name, post.category_id), 
+                 { prompt: "カテゴリを選択してください" },
+                 { class: "form-select" } %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :occurred_at, "発生日", class: "form-label" %>
+    <%= f.date_field :occurred_at, class: "form-control", value: post.occurred_at || Date.today %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :content, "失敗の内容", class: "form-label" %>
+    <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+      何が起こったのか、具体的に記述してください
+    </p>
+    <%= f.text_area :content, class: "form-control", rows: 5, placeholder: "例: 重要なプロジェクトの締切に2日遅れてしまい、チーム全体に迷惑をかけてしまった。クライアントからの信頼も損なう結果となった。" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :cause, "原因分析", class: "form-label" %>
+    <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+      なぜその失敗が起こったのか、根本原因を分析してください
+    </p>
+    <%= f.text_area :cause, class: "form-control", rows: 5, placeholder: "例: タスクの見積もりが甘く、予期せぬバグの修正に時間を取られた。また、途中で仕様変更があったが、それを加味した再見積もりをしなかった。進捗の報告も遅れがちで、問題が大きくなってから発覚した。" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :solution, "対策・改善策", class: "form-label" %>
+    <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+      今後同じ失敗を繰り返さないための具体的な対策を記述してください
+    </p>
+    <%= f.text_area :solution, class: "form-control", rows: 5, placeholder: "例: 今後はタスクの見積もり時にバッファを20%程度設けること。また、仕様変更時には必ず影響範囲を確認し、スケジュールの再調整を行う。週次で進捗報告を行い、問題が小さいうちに共有する体制を作る。" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :learning, "得られた学び", class: "form-label" %>
+    <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+      この経験から何を学んだかを言語化してください
+    </p>
+    <%= f.text_area :learning, class: "form-control", rows: 4, placeholder: "例: スケジュール管理は楽観的にならず、リスクを考慮することが重要。早めの報連相が信頼を守ることにつながる。失敗は隠さず共有することで、チーム全体の学びになる。" %>
+  </div>
+
+  <div class="form-group">
+    <label class="flex items-center" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+      <%= f.check_box :auto_evaluate, { checked: true }, "1", "0" %>
+      <span class="text-sm text-gray-700">投稿時にAI評価を自動実行する</span>
+    </label>
+    <p class="text-xs text-gray-500 ml-6" style="font-size: 0.75rem; color: var(--gray-500); margin-left: 1.5rem; margin-top: 0.25rem;">
+      ※ 原因と対策が記入されている場合のみ実行されます
+    </p>
+  </div>
+
+  <div class="flex gap-3 mt-6" style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+    <%= f.submit post.new_record? ? "投稿する" : "更新する", class: "btn btn-primary", style: "flex: 1;" %>
+    <%= link_to "キャンセル", post.new_record? ? posts_path : post, class: "btn btn-secondary" %>
+  </div>
+<% end %>
