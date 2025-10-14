@@ -1,0 +1,124 @@
+<div class="container" style="padding: 2rem 1rem;">
+  <div class="flex justify-between items-center mb-8" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <h1 class="text-3xl font-bold text-gray-900" style="font-size: 2rem; font-weight: 700;">失敗ログ一覧</h1>
+    <%= link_to new_post_path, class: "btn btn-primary" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span>新規投稿</span>
+    <% end %>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="card mb-6">
+    <%= form_with url: search_posts_path, method: :get, local: true do |f| %>
+      <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <%= f.label :keyword, "キーワード検索", class: "form-label" %>
+          <%= f.text_field :keyword, value: params[:keyword], class: "form-control", placeholder: "タイトルや内容で検索..." %>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+          <%= f.label :category_id, "カテゴリ", class: "form-label" %>
+          <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), 
+                      { include_blank: "すべて" }, 
+                      { class: "form-select" } %>
+        </div>
+        
+        <%= f.submit "検索", class: "btn btn-primary", style: "height: fit-content;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Posts List -->
+  <% if @posts.any? %>
+    <div class="space-y-4">
+      <% @posts.each do |post| %>
+        <div class="card" style="transition: transform 0.2s, box-shadow 0.2s;">
+          <div class="flex justify-between items-start" style="display: flex; justify-content: space-between; gap: 1.5rem;">
+            <div style="flex: 1;">
+              <div class="flex items-center gap-2 mb-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span class="badge" style="background-color: <%= post.category.color %>; color: white;">
+                  <%= post.category.name %>
+                </span>
+                <span class="text-sm text-gray-500"><%= post.created_at.strftime('%Y/%m/%d') %></span>
+                <% if post.ai_evaluated %>
+                  <span class="badge badge-success">AI評価済み</span>
+                <% end %>
+              </div>
+              
+              <%= link_to post.title, post, class: "text-xl font-bold text-gray-900 hover:text-indigo-600 block mb-2", style: "font-size: 1.25rem; font-weight: 700; text-decoration: none; color: var(--gray-900); display: block; margin-bottom: 0.5rem;" %>
+              
+              <p class="text-gray-600 mb-3 line-clamp-2" style="color: var(--gray-600); margin-bottom: 0.75rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                <%= post.content %>
+              </p>
+              
+              <div class="flex gap-2" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <%= link_to post, class: "btn btn-outline", style: "padding: 0.5rem 1rem; font-size: 0.875rem;" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span>詳細</span>
+                <% end %>
+                
+                <%= link_to edit_post_path(post), class: "btn btn-outline", style: "padding: 0.5rem 1rem; font-size: 0.875rem;" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span>編集</span>
+                <% end %>
+              </div>
+            </div>
+            
+            <% if post.ai_score %>
+              <div class="text-center" style="min-width: 100px;">
+                <div class="score-circle rank-<%= post.ai_score.rank %>" style="width: 80px; height: 80px;">
+                  <div class="score-value" style="font-size: 1.75rem;"><%= post.ai_score.total_score %></div>
+                  <div class="score-label">点</div>
+                </div>
+                <div class="mt-2 text-sm font-semibold" style="margin-top: 0.5rem; font-size: 0.875rem; font-weight: 600;">
+                  ランク <%= post.ai_score.rank %>
+                </div>
+              </div>
+            <% else %>
+              <div class="text-center" style="min-width: 100px;">
+                <div style="padding: 1rem; background-color: var(--gray-100); border-radius: 0.5rem;">
+                  <p class="text-sm text-gray-600 mb-2" style="font-size: 0.875rem; margin-bottom: 0.5rem;">未評価</p>
+                  <% if post.needs_ai_evaluation? %>
+                    <%= button_to "AI評価", request_ai_evaluation_post_path(post), method: :post, class: "btn btn-primary", style: "padding: 0.5rem 1rem; font-size: 0.75rem; white-space: nowrap;" %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Pagination -->
+    <div class="text-center mt-8" style="text-align: center; margin-top: 2rem;">
+      <%= paginate @posts %>
+    </div>
+  <% else %>
+    <div class="card text-center py-12" style="padding: 3rem 0; text-align: center;">
+      <div class="text-6xl mb-4" style="font-size: 4rem; margin-bottom: 1rem;">📝</div>
+      <p class="text-gray-600 mb-4">投稿が見つかりませんでした</p>
+      <%= link_to "新しい失敗ログを投稿する", new_post_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .container > div:first-child {
+      flex-direction: column;
+      align-items: flex-start !important;
+    }
+  }
+</style>
