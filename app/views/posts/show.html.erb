@@ -1,0 +1,174 @@
+<div class="container" style="padding: 2rem 1rem;">
+  <div class="max-w-4xl mx-auto" style="max-width: 56rem; margin: 0 auto;">
+    <!-- Header -->
+    <div class="mb-6">
+      <%= link_to posts_path, class: "text-indigo-600 hover:text-indigo-800 inline-flex items-center mb-4", style: "text-decoration: none; color: var(--primary); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>一覧に戻る</span>
+      <% end %>
+      
+      <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <div>
+          <div class="flex items-center gap-2 mb-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="badge" style="background-color: <%= @post.category.color %>; color: white; font-size: 0.875rem; padding: 0.375rem 1rem;">
+              <%= @post.category.name %>
+            </span>
+            <span class="text-sm text-gray-500"><%= @post.created_at.strftime('%Y年%m月%d日') %></span>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900" style="font-size: 2rem; font-weight: 700;">
+            <%= @post.title %>
+          </h1>
+        </div>
+        
+        <div class="flex gap-2" style="display: flex; gap: 0.5rem;">
+          <%= link_to edit_post_path(@post), class: "btn btn-outline" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span>編集</span>
+          <% end %>
+          
+          <%= button_to @post, method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>削除</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+      <!-- AI Score Card -->
+      <% if @post.ai_score %>
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <h2 class="text-2xl font-bold mb-4" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">AI評価スコア</h2>
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center;">
+            <div class="score-circle" style="background-color: white; color: #667eea; width: 140px; height: 140px;">
+              <div class="score-value" style="font-size: 3rem;"><%= @post.ai_score.total_score %></div>
+              <div class="score-label" style="color: #667eea;">/ 100点</div>
+            </div>
+            
+            <div>
+              <div class="mb-4" style="margin-bottom: 1rem;">
+                <div class="text-3xl font-bold mb-1" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">
+                  ランク <%= @post.ai_score.rank %>
+                </div>
+                <div class="text-lg" style="font-size: 1.125rem; opacity: 0.9;">
+                  <%= @post.ai_score.evaluation_message %>
+                </div>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                <div style="background-color: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 0.5rem;">
+                  <div style="font-size: 0.875rem; opacity: 0.9;">原因分析</div>
+                  <div style="font-size: 1.25rem; font-weight: 700;"><%= @post.ai_score.cause_analysis_score %>/25</div>
+                </div>
+                <div style="background-color: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 0.5rem;">
+                  <div style="font-size: 0.875rem; opacity: 0.9;">対策具体性</div>
+                  <div style="font-size: 1.25rem; font-weight: 700;"><%= @post.ai_score.solution_specificity_score %>/25</div>
+                </div>
+                <div style="background-color: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 0.5rem;">
+                  <div style="font-size: 0.875rem; opacity: 0.9;">学び言語化</div>
+                  <div style="font-size: 1.25rem; font-weight: 700;"><%= @post.ai_score.learning_articulation_score %>/25</div>
+                </div>
+                <div style="background-color: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 0.5rem;">
+                  <div style="font-size: 0.875rem; opacity: 0.9;">再発防止</div>
+                  <div style="font-size: 1.25rem; font-weight: 700;"><%= @post.ai_score.prevention_awareness_score %>/25</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6 p-4" style="margin-top: 1.5rem; padding: 1rem; background-color: rgba(255,255,255,0.15); border-radius: 0.5rem;">
+            <h3 class="font-bold mb-2" style="font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              AIからのフィードバック
+            </h3>
+            <p style="line-height: 1.7; opacity: 0.95;"><%= @post.ai_score.feedback_comment %></p>
+          </div>
+        </div>
+      <% else %>
+        <div class="card" style="background-color: var(--gray-100); text-align: center; padding: 2rem;">
+          <p class="text-gray-700 mb-4" style="color: var(--gray-700); margin-bottom: 1rem; font-size: 1.125rem;">
+            まだAI評価が完了していません
+          </p>
+          <% if @post.needs_ai_evaluation? %>
+            <%= button_to "AI評価を実行", request_ai_evaluation_post_path(@post), method: :post, class: "btn btn-primary" %>
+          <% else %>
+            <p class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
+              原因と対策を記入してからAI評価を実行してください
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Post Content -->
+      <div class="card">
+        <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          失敗の内容
+        </h2>
+        <p class="text-gray-700" style="line-height: 1.8; white-space: pre-wrap;"><%= @post.content %></p>
+      </div>
+
+      <% if @post.cause.present? %>
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            原因分析
+          </h2>
+          <p class="text-gray-700" style="line-height: 1.8; white-space: pre-wrap;"><%= @post.cause %></p>
+        </div>
+      <% end %>
+
+      <% if @post.solution.present? %>
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            対策・改善策
+          </h2>
+          <p class="text-gray-700" style="line-height: 1.8; white-space: pre-wrap;"><%= @post.solution %></p>
+        </div>
+      <% end %>
+
+      <% if @post.learning.present? %>
+        <div class="card" style="background-color: #FEF3C7; border: 2px solid #FCD34D;">
+          <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #92400E;">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            得られた学び
+          </h2>
+          <p class="text-gray-800" style="line-height: 1.8; white-space: pre-wrap; color: #78350F;"><%= @post.learning %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media (min-width: 768px) {
+    .card > div:first-child {
+      grid-template-columns: auto 1fr;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .card > div:first-child {
+      grid-template-columns: 1fr !important;
+      text-align: center;
+    }
+  }
+</style>
