@@ -59,9 +59,9 @@
           </button>
 
           <div class="dropdown-menu">
-            <div class="px-4 py-3 border-b border-gray-200">
-              <p class="text-sm font-medium text-gray-900"><%= current_user.name %></p>
-              <p class="text-xs text-gray-500"><%= current_user.email %></p>
+            <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--gray-200);">
+              <p style="font-size: 0.875rem; font-weight: 500; color: var(--gray-900); margin-bottom: 0.25rem;"><%= current_user.name %></p>
+              <p style="font-size: 0.75rem; color: var(--gray-500);"><%= current_user.email %></p>
             </div>
             <%= link_to settings_path, class: "dropdown-item" do %>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
               </svg>
               <span>設定</span>
             <% end %>
-            <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-red-600" do %>
+            <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item", style: "color: var(--danger);" do %>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
