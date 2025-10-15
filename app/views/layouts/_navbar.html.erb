@@ -48,8 +48,8 @@
           <span>新規投稿</span>
         <% end %>
 
-        <div class="relative" data-controller="dropdown">
-          <button type="button" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900" data-action="click->dropdown#toggle">
+        <div class="relative dropdown">
+          <button type="button" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 dropdown-button">
             <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
               <span class="text-indigo-600 font-semibold"><%= current_user.name[0] %></span>
             </div>
@@ -58,7 +58,7 @@
             </svg>
           </button>
 
-          <div class="dropdown-menu" data-dropdown-target="menu">
+          <div class="dropdown-menu">
             <div class="px-4 py-3 border-b border-gray-200">
               <p class="text-sm font-medium text-gray-900"><%= current_user.name %></p>
               <p class="text-xs text-gray-500"><%= current_user.email %></p>
