@@ -1,0 +1,40 @@
+<script>
+  // ドロップダウンメニュー制御
+  (function() {
+    function initDropdown() {
+      const dropdownButton = document.querySelector('.dropdown-button')
+      const dropdownMenu = document.querySelector('.dropdown-menu')
+      const dropdown = document.querySelector('.dropdown')
+      
+      if (!dropdownButton || !dropdownMenu) return
+      
+      // 既存のイベントリスナーを削除して再設定
+      const newButton = dropdownButton.cloneNode(true)
+      dropdownButton.parentNode.replaceChild(newButton, dropdownButton)
+      
+      // ボタンクリック
+      newButton.addEventListener('click', function(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        dropdownMenu.classList.toggle('show')
+      })
+      
+      // 外側クリックで閉じる
+      document.addEventListener('click', function(e) {
+        if (dropdown && !dropdown.contains(e.target)) {
+          dropdownMenu.classList.remove('show')
+        }
+      })
+    }
+    
+    // DOMContentLoaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDropdown)
+    } else {
+      initDropdown()
+    }
+    
+    // Turbo対応
+    document.addEventListener('turbo:load', initDropdown)
+  })()
+</script>
