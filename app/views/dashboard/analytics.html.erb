@@ -1,0 +1,164 @@
+<div class="container" style="padding: 2rem 1rem;">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+      成長分析
+    </h1>
+    <p class="text-gray-600">あなたの学びの軌跡を可視化します</p>
+  </div>
+
+  <% if @posts_with_scores.any? %>
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">総投稿数</div>
+        <div class="stat-value"><%= @posts_with_scores.count %></div>
+      </div>
+      
+      <% if @score_stats %>
+        <div class="stat-card">
+          <div class="stat-label">平均スコア</div>
+          <div class="stat-value" style="color: var(--secondary);"><%= @score_stats[:average] %></div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">最高スコア</div>
+          <div class="stat-value" style="color: var(--warning);"><%= @score_stats[:max] %></div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">最低スコア</div>
+          <div class="stat-value" style="color: var(--info);"><%= @score_stats[:min] %></div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Charts Grid -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Score Trend Chart -->
+      <div class="card">
+        <h2 class="card-title mb-4" style="margin-bottom: 1rem;">スコア推移</h2>
+        <div style="position: relative; height: 300px;">
+          <canvas 
+            class="chart-canvas"
+            data-chart-type="line"
+            data-chart-url="<%= api_v1_dashboard_chart_data_path %>">
+          </canvas>
+        </div>
+        <p class="text-sm text-gray-600 mt-4 text-center" style="font-size: 0.875rem; color: var(--gray-600); margin-top: 1rem; text-align: center;">
+          時系列でのスコアの変化を確認できます
+        </p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <!-- Category Scores Chart -->
+      <div class="card">
+        <h2 class="card-title mb-4" style="margin-bottom: 1rem;">カテゴリ別平均スコア</h2>
+        <div style="position: relative; height: 300px;">
+          <canvas 
+            class="chart-canvas"
+            data-chart-type="bar"
+            data-chart-url="<%= api_v1_dashboard_chart_data_path %>">
+          </canvas>
+        </div>
+      </div>
+
+      <!-- Radar Chart -->
+      <div class="card">
+        <h2 class="card-title mb-4" style="margin-bottom: 1rem;">能力バランス（最新）</h2>
+        <div style="position: relative; height: 300px;">
+          <canvas 
+            class="chart-canvas"
+            data-chart-type="radar"
+            data-chart-url="<%= api_v1_dashboard_chart_data_path %>">
+          </canvas>
+        </div>
+        <div class="text-xs text-gray-600 mt-4" style="font-size: 0.75rem; color: var(--gray-600); margin-top: 1rem;">
+          <p>• 原因分析: 失敗の根本原因を理解する力</p>
+          <p>• 対策具体性: 実行可能な対策を立案する力</p>
+          <p>• 学び言語化: 経験を言葉にする力</p>
+          <p>• 再発防止: 同じ失敗を繰り返さない意識</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Breakdown -->
+    <% if @category_scores.any? %>
+      <div class="card mt-6" style="margin-top: 1.5rem;">
+        <h2 class="card-title mb-4" style="margin-bottom: 1rem;">カテゴリ別詳細</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+          <% @category_scores.each do |category_name, avg_score| %>
+            <% category = Category.find_by(name: category_name) %>
+            <div style="padding: 1rem; border-radius: 0.5rem; background-color: var(--gray-50); border-left: 4px solid <%= category&.color || 'var(--gray-400)' %>;">
+              <div class="flex justify-between items-center" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div class="font-semibold text-gray-900" style="font-weight: 600; color: var(--gray-900);">
+                    <%= category_name %>
+                  </div>
+                  <div class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
+                    平均スコア
+                  </div>
+                </div>
+                <div class="text-3xl font-bold" style="font-size: 2rem; font-weight: 700; color: <%= category&.color || 'var(--gray-400)' %>;">
+                  <%= avg_score.round(1) %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Recent High Scores -->
+    <div class="card mt-6" style="margin-top: 1.5rem;">
+      <h2 class="card-title mb-4" style="margin-bottom: 1rem;">高評価の投稿 Top 5</h2>
+      <div class="space-y-3">
+        <% @posts_with_scores.order('ai_scores.total_score DESC').limit(5).each_with_index do |post, index| %>
+          <div class="flex items-center gap-4 p-3" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background-color: var(--gray-50); border-radius: 0.5rem;">
+            <div class="text-2xl font-bold" style="font-size: 1.5rem; font-weight: 700; color: var(--gray-400); min-width: 2rem;">
+              #<%= index + 1 %>
+            </div>
+            <div style="flex: 1;">
+              <%= link_to post.title, post, class: "font-semibold text-gray-900 hover:text-indigo-600", style: "font-weight: 600; text-decoration: none; color: var(--gray-900);" %>
+              <div class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
+                <%= post.category.name %> • <%= post.created_at.strftime('%Y/%m/%d') %>
+              </div>
+            </div>
+            <div class="score-circle rank-<%= post.ai_score.rank %>" style="width: 60px; height: 60px;">
+              <div class="score-value" style="font-size: 1.25rem;"><%= post.ai_score.total_score %></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Reflection Section -->
+    <div class="card mt-6" style="margin-top: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <h2 class="text-2xl font-bold mb-4" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">
+        成長の振り返り
+      </h2>
+      <p class="mb-4" style="margin-bottom: 1rem; line-height: 1.7; opacity: 0.95;">
+        これまでの投稿を通じて、あなたは着実に成長しています。失敗を恐れず、それを学びに変える姿勢が素晴らしいです。
+      </p>
+      <%= link_to reflection_path, class: "btn", style: "background-color: white; color: #667eea; font-weight: 600;" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>詳しい振り返りを見る</span>
+      <% end %>
+    </div>
+
+  <% else %>
+    <!-- Empty State -->
+    <div class="card text-center" style="padding: 4rem 2rem; text-align: center;">
+      <div class="text-6xl mb-4" style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+        まだ分析データがありません
+      </h2>
+      <p class="text-gray-600 mb-6" style="margin-bottom: 1.5rem;">
+        投稿にAI評価を実行すると、ここに成長分析が表示されます
+      </p>
+      <%= link_to "失敗ログを投稿する", new_post_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
