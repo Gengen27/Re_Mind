@@ -22,8 +22,9 @@
     <% if flash.any? %>
       <div class="flash-messages">
         <% flash.each do |type, message| %>
-          <div class="flash flash-<%= type %>" data-controller="flash" data-flash-type-value="<%= type %>">
+          <div class="flash flash-<%= type %>">
             <%= message %>
+            <button class="flash-close" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; color: inherit; opacity: 0.7; cursor: pointer; font-size: 1.5rem; line-height: 1; padding: 0.25rem 0.5rem;">×</button>
           </div>
         <% end %>
       </div>
