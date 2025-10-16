@@ -18,9 +18,26 @@ Rails.application.routes.draw do
   resources :posts do
     member do
       post :request_ai_evaluation
+      get :edit_reflection_checklist
+      patch :update_reflection_checklist
     end
     collection do
       get :search
+    end
+  end
+  
+  # Reminders (振り返り)
+  resources :reminders, only: [:index, :show, :update] do
+    member do
+      post :complete
+      post :skip
+    end
+  end
+  
+  # Reflection Items (チェック項目)
+  resources :reflection_items, only: [:create, :update, :destroy] do
+    member do
+      post :toggle_check
     end
   end
   
