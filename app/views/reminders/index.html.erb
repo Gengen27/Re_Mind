@@ -1,0 +1,158 @@
+<div class="container mx-auto px-4 py-8" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+  <div class="mb-8" style="margin-bottom: 2rem;">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+      📅 振り返り一覧
+    </h1>
+    <p class="text-gray-600" style="color: var(--gray-600);">
+      定期的な振り返りで、学びを定着させましょう
+    </p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background-color: rgba(245, 158, 11, 0.1);">
+        <svg class="w-8 h-8" style="width: 2rem; height: 2rem; color: var(--warning);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="stat-label">振り返り待ち</div>
+      <div class="stat-value"><%= @pending_count %></div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1);">
+        <svg class="w-8 h-8" style="width: 2rem; height: 2rem; color: var(--secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="stat-label">完了済み</div>
+      <div class="stat-value"><%= @completed_count %></div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background-color: rgba(79, 70, 229, 0.1);">
+        <svg class="w-8 h-8" style="width: 2rem; height: 2rem; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+      <div class="stat-label">完了率</div>
+      <div class="stat-value">
+        <%= (@reminders.count > 0 ? (@completed_count.to_f / @reminders.count * 100).round : 0) %>%
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div style="margin-bottom: 1.5rem; border-bottom: 2px solid var(--gray-200);">
+    <div style="display: flex; gap: 1rem;">
+      <%= link_to reminders_path, 
+                  style: "padding: 0.75rem 1rem; border-bottom: 2px solid #{params[:filter].blank? ? 'var(--primary)' : 'transparent'}; color: #{params[:filter].blank? ? 'var(--primary)' : 'var(--gray-600)'}; font-weight: 600; text-decoration: none; margin-bottom: -2px;" do %>
+        すべて
+      <% end %>
+      <%= link_to reminders_path(filter: 'pending'), 
+                  style: "padding: 0.75rem 1rem; border-bottom: 2px solid #{params[:filter] == 'pending' ? 'var(--primary)' : 'transparent'}; color: #{params[:filter] == 'pending' ? 'var(--primary)' : 'var(--gray-600)'}; font-weight: 600; text-decoration: none; margin-bottom: -2px;" do %>
+        振り返り待ち
+      <% end %>
+      <%= link_to reminders_path(filter: 'completed'), 
+                  style: "padding: 0.75rem 1rem; border-bottom: 2px solid #{params[:filter] == 'completed' ? 'var(--primary)' : 'transparent'}; color: #{params[:filter] == 'completed' ? 'var(--primary)' : 'var(--gray-600)'}; font-weight: 600; text-decoration: none; margin-bottom: -2px;" do %>
+        完了済み
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Reminders List -->
+  <% filtered_reminders = @reminders %>
+  <% if params[:filter] == 'pending' %>
+    <% filtered_reminders = @reminders.where(status: ['ready', 'in_progress']) %>
+  <% elsif params[:filter] == 'completed' %>
+    <% filtered_reminders = @reminders.where(status: 'completed') %>
+  <% end %>
+
+  <% if filtered_reminders.any? %>
+    <div class="space-y-4" style="display: flex; flex-direction: column; gap: 1rem;">
+      <% filtered_reminders.each do |reminder| %>
+        <div class="card" style="<%= reminder.status == 'completed' ? 'opacity: 0.7;' : '' %>">
+          <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <% if reminder.status == 'completed' %>
+                  <span style="font-size: 1.5rem;">✅</span>
+                <% elsif reminder.status == 'in_progress' %>
+                  <span style="font-size: 1.5rem;">🔄</span>
+                <% else %>
+                  <span style="font-size: 1.5rem;">🔔</span>
+                <% end %>
+                
+                <span class="badge badge-warning">
+                  <%= reminder.reminder_type_name %>
+                </span>
+                
+                <% if reminder.retry_count > 0 %>
+                  <span class="badge" style="background-color: var(--warning); color: white;">
+                    再挑戦 <%= reminder.retry_count %>回目
+                  </span>
+                <% end %>
+              </div>
+
+              <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">
+                <%= link_to reminder.post.title, reminder_path(reminder), style: "color: var(--gray-900); text-decoration: none;" %>
+              </h3>
+
+              <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="badge" style="background-color: <%= reminder.post.category.color %>; color: white;">
+                  <%= reminder.post.category.name %>
+                </span>
+                <span class="text-sm text-gray-500" style="font-size: 0.875rem;">
+                  予定日：<%= reminder.scheduled_date %>
+                </span>
+                <span class="text-sm text-gray-500" style="font-size: 0.875rem;">
+                  投稿日：<%= reminder.post.created_at.strftime('%Y/%m/%d') %>
+                </span>
+              </div>
+            </div>
+
+            <div style="text-align: center; min-width: 100px;">
+              <% if reminder.status == 'completed' %>
+                <div class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                  完了
+                </div>
+                <% if reminder.completed_at %>
+                  <div class="text-xs text-gray-500" style="font-size: 0.75rem; margin-top: 0.25rem;">
+                    <%= reminder.completed_at.strftime('%m/%d') %>
+                  </div>
+                <% end %>
+              <% else %>
+                <div style="margin-bottom: 0.5rem;">
+                  <div style="font-size: 1.5rem; font-weight: 700; color: <%= reminder.all_items_checked? ? 'var(--secondary)' : 'var(--warning)' %>;">
+                    <%= reminder.checked_items_count %>/<%= reminder.total_items_count %>
+                  </div>
+                  <div class="text-xs text-gray-500" style="font-size: 0.75rem;">
+                    <%= reminder.completion_rate %>%
+                  </div>
+                </div>
+                <%= link_to "振り返る", reminder_path(reminder), class: "btn btn-primary btn-sm" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%= paginate filtered_reminders %>
+  <% else %>
+    <div class="card text-center" style="text-align: center; padding: 3rem;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+      <p class="text-gray-600">
+        <% if params[:filter] == 'pending' %>
+          振り返り待ちの項目はありません
+        <% elsif params[:filter] == 'completed' %>
+          まだ完了した振り返りはありません
+        <% else %>
+          振り返りがまだありません
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+</div>
+
