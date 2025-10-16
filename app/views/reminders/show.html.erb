@@ -1,0 +1,215 @@
+<div class="container mx-auto px-4 py-8" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
+  <!-- Header -->
+  <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(to right, rgba(79, 70, 229, 0.05), rgba(16, 185, 129, 0.05));">
+    <div style="margin-bottom: 1rem;">
+      <%= link_to "← 振り返り一覧に戻る", reminders_path, style: "color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.875rem;" %>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+      <span style="font-size: 2rem;">📝</span>
+      <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--gray-900);">
+        <%= @reminder.reminder_type_name %>の振り返り
+      </h1>
+      <span class="badge badge-warning">
+        <%= @reminder.scheduled_date %>
+      </span>
+    </div>
+
+    <div style="padding: 1rem; background-color: white; border-radius: 0.5rem; margin-bottom: 1rem;">
+      <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">
+        <%= @post.title %>
+      </h2>
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span class="badge" style="background-color: <%= @post.category.color %>; color: white;">
+          <%= @post.category.name %>
+        </span>
+        <span class="text-sm text-gray-500" style="font-size: 0.875rem;">
+          投稿日：<%= @post.created_at.strftime('%Y年%m月%d日') %>
+        </span>
+        <%= link_to "投稿を見る →", post_path(@post), style: "color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 600;" %>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div style="background-color: white; padding: 1rem; border-radius: 0.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <span style="font-weight: 600; color: var(--gray-700);">進捗</span>
+        <span style="font-size: 1.25rem; font-weight: 700; color: <%= @reminder.all_items_checked? ? 'var(--secondary)' : 'var(--primary)' %>;">
+          <%= @reminder.checked_items_count %> / <%= @reminder.total_items_count %> 完了
+        </span>
+      </div>
+      <div style="width: 100%; height: 8px; background-color: var(--gray-200); border-radius: 9999px; overflow: hidden;">
+        <div style="width: <%= @reminder.completion_rate %>%; height: 100%; background-color: <%= @reminder.all_items_checked? ? 'var(--secondary)' : 'var(--primary)' %>; transition: width 0.3s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="card" style="margin-bottom: 1.5rem; background-color: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--info);">
+    <h3 style="font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-900);">💭 振り返りのポイント</h3>
+    <p style="color: var(--gray-600); font-size: 0.875rem;">
+      以下の質問に正直に答えてください。まだ同じ場面に遭遇していなくても大丈夫です。<br>
+      記憶や理解を確認することで、学びが定着します。
+    </p>
+  </div>
+
+  <!-- Checklist -->
+  <div class="card">
+    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--gray-900);">
+      チェックリスト
+    </h2>
+
+    <div id="reflection-items" style="display: flex; flex-direction: column; gap: 1rem;">
+      <% @reflection_items.each do |item| %>
+        <div class="reflection-item-card" 
+             data-item-id="<%= item.id %>"
+             style="padding: 1rem; border: 2px solid <%= item.checked? ? 'var(--secondary)' : 'var(--gray-300)' %>; border-radius: 0.5rem; background-color: <%= item.checked? ? 'rgba(16, 185, 129, 0.05)' : 'white' %>; transition: all 0.3s; cursor: pointer;"
+             onclick="toggleItem(<%= item.id %>)">
+          
+          <div style="display: flex; align-items: start; gap: 0.75rem;">
+            <div class="checkbox-container" style="margin-top: 0.25rem;">
+              <% if item.checked? %>
+                <svg style="width: 1.5rem; height: 1.5rem; color: var(--secondary);" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              <% else %>
+                <svg style="width: 1.5rem; height: 1.5rem; color: var(--gray-400);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                </svg>
+              <% end %>
+            </div>
+
+            <div style="flex: 1;">
+              <p style="font-size: 1rem; color: <%= item.checked? ? 'var(--gray-700)' : 'var(--gray-900)' %>; line-height: 1.5; <%= item.checked? ? 'text-decoration: line-through;' : '' %>">
+                <%= item.content %>
+              </p>
+              
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                <% if item.item_type.present? %>
+                  <span class="badge" style="font-size: 0.75rem; <%= item.checked? ? 'opacity: 0.7;' : '' %>">
+                    <%= item.item_type_name %>
+                  </span>
+                <% end %>
+                
+                <% if item.ai_generated %>
+                  <span style="font-size: 0.75rem; color: var(--gray-500);">🤖 AI生成</span>
+                <% end %>
+                
+                <% if item.checked_at %>
+                  <span style="font-size: 0.75rem; color: var(--gray-500);">
+                    ✓ <%= item.checked_at.strftime('%m/%d %H:%M') %>
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Complete Button -->
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--gray-200);">
+      <% if @reminder.all_items_checked? %>
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+          <p style="font-size: 1.125rem; font-weight: 600; color: var(--secondary);">
+            すべての項目をチェックしました！
+          </p>
+        </div>
+      <% end %>
+
+      <%= form_with url: complete_reminder_path(@reminder), method: :post, local: true do |form| %>
+        <div style="display: flex; gap: 1rem;">
+          <%= link_to "後で振り返る", reminders_path, class: "btn btn-secondary", style: "flex: 1; justify-content: center;" %>
+          <%= form.submit "振り返りを完了する", 
+                          class: "btn #{@reminder.all_items_checked? ? 'btn-success' : 'btn-primary'}", 
+                          style: "flex: 2; justify-content: center;" %>
+        </div>
+      <% end %>
+      
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray-500);">
+        <% if @reminder.all_items_checked? %>
+          完了すると次のタイミングの振り返りに進みます
+        <% else %>
+          未完了の項目がある場合、AIがアドバイスを提供します
+        <% end %>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleItem(itemId) {
+  fetch(`/reflection_items/${itemId}/toggle_check`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    // アイテムカードの更新
+    const card = document.querySelector(`[data-item-id="${itemId}"]`);
+    const checkbox = card.querySelector('.checkbox-container');
+    const text = card.querySelector('p');
+    
+    if (data.checked) {
+      card.style.borderColor = 'var(--secondary)';
+      card.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+      text.style.textDecoration = 'line-through';
+      text.style.color = 'var(--gray-700)';
+      checkbox.innerHTML = `
+        <svg style="width: 1.5rem; height: 1.5rem; color: var(--secondary);" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      `;
+    } else {
+      card.style.borderColor = 'var(--gray-300)';
+      card.style.backgroundColor = 'white';
+      text.style.textDecoration = 'none';
+      text.style.color = 'var(--gray-900)';
+      checkbox.innerHTML = `
+        <svg style="width: 1.5rem; height: 1.5rem; color: var(--gray-400);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2"/>
+        </svg>
+      `;
+    }
+    
+    // プログレスバーの更新
+    const progressText = document.querySelector('.card div:nth-child(4) span:last-child');
+    const progressBar = document.querySelector('.card div:nth-child(4) div div');
+    
+    if (progressText && progressBar) {
+      progressText.textContent = `${data.checked_count} / ${data.total_count} 完了`;
+      progressBar.style.width = `${data.completion_rate}%`;
+      
+      if (data.checked_count === data.total_count) {
+        progressText.style.color = 'var(--secondary)';
+        progressBar.style.backgroundColor = 'var(--secondary)';
+      } else {
+        progressText.style.color = 'var(--primary)';
+        progressBar.style.backgroundColor = 'var(--primary)';
+      }
+    }
+    
+    // ページをリロードして完了状態を更新
+    if (data.checked_count === data.total_count) {
+      setTimeout(() => location.reload(), 500);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('エラーが発生しました');
+  });
+}
+</script>
+
+<style>
+.reflection-item-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>
+
