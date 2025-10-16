@@ -7,6 +7,13 @@ class DashboardController < ApplicationController
     @evaluated_posts = current_user.posts.where(ai_evaluated: true).count
     @average_score = current_user.posts.joins(:ai_score).average('ai_scores.total_score')&.round(1)
     @categories = Category.all
+    
+    # 振り返り待ちのリマインド取得
+    @pending_reminders = current_user.reminders
+                                     .includes(post: :category)
+                                     .where(status: ['ready', 'in_progress'])
+                                     .order(:scheduled_date)
+                                     .limit(5)
   end
 
   def analytics
