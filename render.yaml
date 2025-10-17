@@ -1,0 +1,44 @@
+# Render設定ファイル
+# https://render.com/docs/yaml-spec
+
+services:
+  # Webアプリケーション
+  - type: web
+    name: re-mind
+    env: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: re-mind-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  # データベース
+  - type: postgres
+    name: re-mind-db
+    databaseName: re_mind_production
+    user: re_mind_user
+    plan: free
+
+  # Cron Job: 振り返りリマインド更新
+  - type: cron
+    name: reminders-update
+    env: ruby
+    schedule: "0 0 * * *"  # 毎日0時（UTC）に実行
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec rails reminders:process_all"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: re-mind-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
