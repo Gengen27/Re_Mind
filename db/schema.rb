@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_10_052026) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_16_000002) do
   create_table "ai_scores", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "post_id", null: false
     t.integer "total_score", null: false
@@ -57,6 +57,43 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_10_052026) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "reflection_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "reminder_id", null: false
+    t.bigint "post_id", null: false
+    t.text "content", null: false
+    t.string "item_type"
+    t.integer "position", default: 0, null: false
+    t.boolean "checked", default: false, null: false
+    t.datetime "checked_at"
+    t.boolean "ai_generated", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checked"], name: "index_reflection_items_on_checked"
+    t.index ["post_id"], name: "index_reflection_items_on_post_id"
+    t.index ["reminder_id", "position"], name: "index_reflection_items_on_reminder_id_and_position"
+    t.index ["reminder_id"], name: "index_reflection_items_on_reminder_id"
+  end
+
+  create_table "reminders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "user_id", null: false
+    t.string "reminder_type", null: false
+    t.date "scheduled_date", null: false
+    t.datetime "completed_at"
+    t.string "status", default: "pending", null: false
+    t.integer "checked_items_count", default: 0, null: false
+    t.integer "total_items_count", default: 0, null: false
+    t.integer "retry_count", default: 0, null: false
+    t.text "ai_advice"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_reminders_on_post_id"
+    t.index ["reminder_type"], name: "index_reminders_on_reminder_type"
+    t.index ["scheduled_date", "status"], name: "index_reminders_on_scheduled_date_and_status"
+    t.index ["user_id", "status"], name: "index_reminders_on_user_id_and_status"
+    t.index ["user_id"], name: "index_reminders_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -81,4 +118,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_10_052026) do
   add_foreign_key "ai_scores", "posts"
   add_foreign_key "posts", "categories"
   add_foreign_key "posts", "users"
+  add_foreign_key "reflection_items", "posts"
+  add_foreign_key "reflection_items", "reminders"
+  add_foreign_key "reminders", "posts"
+  add_foreign_key "reminders", "users"
 end
