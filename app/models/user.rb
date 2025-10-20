@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :trackable
 
   has_many :posts, dependent: :destroy
+  has_many :reminders, dependent: :destroy
   
   validates :name, presence: true, length: { maximum: 50 }
   validates :mentor_personality, inclusion: { in: %w[gentle strict logical balanced] }

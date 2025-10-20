@@ -1,0 +1,140 @@
+<div class="container mx-auto px-4 py-8" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="text-3xl font-bold text-gray-900" style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+        📝 振り返りチェックリストの編集
+      </h1>
+      <p class="text-gray-600" style="margin-top: 0.5rem; color: var(--gray-600);">
+        AIが生成したチェックリストを確認・編集できます。項目の追加や削除も自由に行えます。
+      </p>
+    </div>
+
+    <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--gray-50); border-radius: 0.5rem;">
+      <h2 style="font-weight: 600; margin-bottom: 0.5rem;">投稿：<%= @post.title %></h2>
+      <p class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
+        カテゴリ：<%= @post.category.name %> | 投稿日：<%= @post.created_at.strftime('%Y年%m月%d日 %H:%M') %>
+      </p>
+    </div>
+
+    <%= form_with url: update_reflection_checklist_post_path(@post), method: :patch, local: true do |form| %>
+      <% @reminders.each do |reminder| %>
+        <div class="reminder-section" style="margin-bottom: 2rem; padding: 1.5rem; border: 2px solid var(--gray-200); border-radius: 0.75rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--primary);">
+            <%= reminder.reminder_type_name %>の振り返り
+            <span class="badge badge-primary" style="margin-left: 0.5rem; font-size: 0.75rem;">
+              <%= reminder.scheduled_date %> 予定
+            </span>
+          </h3>
+
+          <div class="reflection-items" id="items-<%= reminder.id %>">
+            <% reminder.reflection_items.ordered.each do |item| %>
+              <div class="reflection-item" style="margin-bottom: 1rem; padding: 0.75rem; background-color: white; border: 1px solid var(--gray-300); border-radius: 0.5rem;">
+                <div class="flex items-center" style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="color: var(--gray-500);">☐</span>
+                  
+                  <%= text_area_tag "items[#{reminder.id}][#{item.id}][content]", 
+                                     item.content,
+                                     class: "form-control",
+                                     rows: 2,
+                                     style: "flex: 1; resize: vertical;" %>
+                  
+                  <%= hidden_field_tag "items[#{reminder.id}][#{item.id}][position]", item.position %>
+                  
+                  <button type="button" 
+                          class="btn btn-danger btn-sm"
+                          style="padding: 0.5rem; background-color: var(--danger); color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem;"
+                          onclick="this.nextElementSibling.value='1'; this.closest('.reflection-item').style.display='none';">
+                    削除
+                  </button>
+                  <%= hidden_field_tag "items[#{reminder.id}][#{item.id}][_destroy]", "0" %>
+                  
+                  <% if item.ai_generated %>
+                    <span class="badge badge-success" style="font-size: 0.625rem; padding: 0.25rem 0.5rem;">
+                      AI生成
+                    </span>
+                  <% else %>
+                    <span class="badge badge-primary" style="font-size: 0.625rem; padding: 0.25rem 0.5rem;">
+                      自分で追加
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="new-items-container" id="new-items-<%= reminder.id %>" style="margin-top: 1rem;">
+            <!-- 新規項目がここに追加される -->
+          </div>
+
+          <button type="button" 
+                  class="btn btn-outline"
+                  style="margin-top: 0.5rem;"
+                  onclick="addNewItem(<%= reminder.id %>)">
+            + 項目を追加
+          </button>
+        </div>
+      <% end %>
+
+      <div class="flex justify-between" style="display: flex; justify-content: space-between; margin-top: 2rem;">
+        <%= link_to "キャンセル", @post, class: "btn btn-secondary" %>
+        <%= form.submit "保存して完了", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+let newItemCounters = {};
+
+<% @reminders.each do |reminder| %>
+  newItemCounters[<%= reminder.id %>] = 0;
+<% end %>
+
+function addNewItem(reminderId) {
+  const container = document.getElementById(`new-items-${reminderId}`);
+  const counter = newItemCounters[reminderId]++;
+  
+  const itemHtml = `
+    <div class="reflection-item" style="margin-bottom: 1rem; padding: 0.75rem; background-color: var(--gray-50); border: 1px solid var(--gray-300); border-radius: 0.5rem;">
+      <div class="flex items-center" style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="color: var(--gray-500);">☐</span>
+        
+        <textarea 
+          name="new_items[${reminderId}][${counter}][content]"
+          class="form-control"
+          rows="2"
+          placeholder="新しいチェック項目を入力..."
+          style="flex: 1; resize: vertical;"></textarea>
+        
+        <button type="button" 
+                class="btn btn-danger btn-sm"
+                style="padding: 0.5rem; background-color: var(--danger); color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem;"
+                onclick="this.closest('.reflection-item').remove();">
+          削除
+        </button>
+        
+        <span class="badge badge-primary" style="font-size: 0.625rem; padding: 0.25rem 0.5rem;">
+          新規
+        </span>
+      </div>
+    </div>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', itemHtml);
+}
+</script>
+
+<style>
+.reminder-section:hover {
+  border-color: var(--primary);
+}
+
+.reflection-item {
+  transition: all 0.2s;
+}
+
+.reflection-item:hover {
+  background-color: var(--gray-50);
+}
+</style>
+

@@ -13,14 +13,34 @@ Rails.application.routes.draw do
   get 'dashboard', to: 'dashboard#index'
   get 'analytics', to: 'dashboard#analytics'
   get 'reflection', to: 'dashboard#reflection'
+  post 'reflection/generate_summary', to: 'dashboard#generate_ai_summary', as: :generate_ai_summary
+  delete 'reflection/clear_summary', to: 'dashboard#clear_ai_summary', as: :clear_ai_summary
   
   # Posts (失敗ログ)
   resources :posts do
     member do
       post :request_ai_evaluation
+      get :edit_reflection_checklist
+      patch :update_reflection_checklist
     end
     collection do
       get :search
+    end
+  end
+  
+  # Reminders (振り返り)
+  resources :reminders, only: [:index, :show, :update] do
+    member do
+      post :complete
+      post :skip
+      get :incomplete_feedback
+    end
+  end
+  
+  # Reflection Items (チェック項目)
+  resources :reflection_items, only: [:create, :update, :destroy] do
+    member do
+      post :toggle_check
     end
   end
   

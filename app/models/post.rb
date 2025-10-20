@@ -2,6 +2,8 @@ class Post < ApplicationRecord
   belongs_to :user
   belongs_to :category
   has_one :ai_score, dependent: :destroy
+  has_many :reminders, dependent: :destroy
+  has_many :reflection_items, dependent: :destroy
   
   validates :title, presence: true, length: { maximum: 200 }
   validates :content, presence: true, length: { maximum: 5000 }
@@ -31,5 +33,27 @@ class Post < ApplicationRecord
     return false if ai_evaluated
     
     ::AiEvaluationService.new(self).evaluate
+  end
+  
+  # リマインドを作成
+  def create_reminders!
+    return if reminders.any? # 既に作成済みの場合はスキップ
+    
+    reminder_types = %w[day_1 day_3 day_7 day_30 day_90]
+    days_map = { 'day_1' => 1, 'day_3' => 3, 'day_7' => 7, 'day_30' => 30, 'day_90' => 90 }
+    
+    reminder_types.each do |type|
+      reminders.create!(
+        user: user,
+        reminder_type: type,
+        scheduled_date: created_at.to_date + days_map[type].days,
+        status: 'pending'
+      )
+    end
+  end
+  
+  # 振り返り準備が完了しているか
+  def reflection_ready?
+    reminders.any? && reminders.all? { |r| r.total_items_count > 0 }
   end
 end

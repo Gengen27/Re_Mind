@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# 振り返りリマインドを更新するヘルパースクリプト
+# 開発環境で簡単に実行できるようにするためのラッパー
+#
+
+require 'fileutils'
+
+APP_ROOT = File.expand_path('..', __dir__)
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+FileUtils.chdir APP_ROOT do
+  puts "\n== 振り返りリマインド更新 =="
+  system! 'bin/rails reminders:process_all'
+end
+
