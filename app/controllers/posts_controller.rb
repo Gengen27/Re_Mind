@@ -13,6 +13,7 @@ class PostsController < ApplicationController
   end
 
   def show
+    @reminders = @post.reminders.order(:scheduled_date)
   end
 
   def new
