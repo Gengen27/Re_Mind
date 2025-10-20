@@ -3,8 +3,8 @@
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <div class="flex items-center space-x-8">
-        <%= link_to dashboard_path, class: "flex items-center space-x-2" do %>
-          <span class="text-2xl font-bold text-indigo-600">Re:Mind</span>
+        <%= link_to dashboard_path, class: "flex items-center logo-link" do %>
+          <span class="logo-text" style="font-size: 2.25rem; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em;">Re:Mind</span>
         <% end %>
 
         <!-- Navigation Links -->
@@ -13,7 +13,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            <span>ダッシュボード</span>
+            <span>ホーム</span>
             <% if defined?(@pending_reminders_count) && @pending_reminders_count > 0 %>
               <span class="badge badge-danger" style="margin-left: 0.25rem; font-size: 0.75rem; background-color: var(--danger); color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-weight: 600;">
                 <%= @pending_reminders_count %>
@@ -25,28 +25,28 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span>失敗ログ</span>
+            <span>ログ</span>
           <% end %>
 
           <%= link_to analytics_path, class: "nav-link #{current_page?(analytics_path) ? 'active' : ''}" do %>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <span>成長分析</span>
+            <span>分析</span>
           <% end %>
 
           <%= link_to reminders_path, class: "nav-link #{current_page?(reminders_path) ? 'active' : ''}" do %>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
-            <span>振り返り</span>
+            <span>振返り</span>
           <% end %>
 
           <%= link_to reflection_path, class: "nav-link #{current_page?(reflection_path) ? 'active' : ''}" do %>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
-            <span>学びの軌跡</span>
+            <span>学び</span>
           <% end %>
 
           <%= link_to categories_path, class: "nav-link #{current_page?(categories_path) ? 'active' : ''}" do %>
@@ -68,13 +68,11 @@
         <% end %>
 
         <div class="relative dropdown">
-          <button type="button" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 dropdown-button">
-            <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-              <span class="text-indigo-600 font-semibold"><%= current_user.name[0] %></span>
-            </div>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          <button type="button" class="dropdown-button" style="padding: 0.625rem 1rem; border-radius: 0.5rem; border: 2px solid var(--gray-200); background-color: white; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; color: var(--gray-700); font-weight: 500; font-size: 0.875rem; white-space: nowrap;">
+            <svg style="width: 1.25rem; height: 1.25rem; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
+            <span style="display: inline-block;">メニュー</span>
           </button>
 
           <div class="dropdown-menu">
@@ -101,3 +99,16 @@
     </div>
   </div>
 </nav>
+
+<style>
+.logo-link:hover .logo-text {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.dropdown-button:hover {
+  border-color: var(--primary) !important;
+  background-color: rgba(79, 70, 229, 0.05) !important;
+  color: var(--primary) !important;
+}
+</style>
