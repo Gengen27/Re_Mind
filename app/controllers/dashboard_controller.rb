@@ -25,5 +25,35 @@ class DashboardController < ApplicationController
   def reflection
     @posts = current_user.posts.includes(:ai_score, :category).recent.page(params[:page]).per(10)
     @total_score = current_user.posts.joins(:ai_score).sum('ai_scores.total_score')
+    @total_posts = current_user.posts.count
+  end
+  
+  def generate_ai_summary
+    # 期間の設定（デフォルト: 1ヶ月）
+    period = params[:period]&.to_i || 30
+    start_date = period.days.ago
+    end_date = Time.current
+    
+    # AI総評生成
+    service = AiReflectionService.new(current_user, start_date: start_date, end_date: end_date)
+    @ai_summary = service.generate_reflection
+    
+    if @ai_summary.present?
+      # セッションに保存（または DBに保存も可能）
+      session[:ai_summary] = @ai_summary.to_json
+      session[:ai_summary_period] = period
+      session[:ai_summary_generated_at] = Time.current
+      
+      redirect_to reflection_path, notice: 'AI総評を生成しました。'
+    else
+      redirect_to reflection_path, alert: 'AI総評の生成に失敗しました。AI評価済みの投稿が必要です。'
+    end
+  end
+  
+  def clear_ai_summary
+    session.delete(:ai_summary)
+    session.delete(:ai_summary_period)
+    session.delete(:ai_summary_generated_at)
+    redirect_to reflection_path, notice: 'AI総評をクリアしました。'
   end
 end
