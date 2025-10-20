@@ -37,13 +37,97 @@
           </p>
         </div>
 
-        <!-- AI総評ボタン（今後実装） -->
-        <div class="mt-4 p-3" style="margin-top: 1rem; padding: 0.75rem; background-color: rgba(255,255,255,0.1); border-radius: 0.5rem; border: 1px dashed rgba(255,255,255,0.3);">
-          <p class="text-sm" style="font-size: 0.875rem; opacity: 0.9;">
-            🤖 <strong>AI総評機能</strong>（近日実装予定）<br>
-            一定期間の投稿をAIが分析し、成長の軌跡と今後の課題を総評します。
-          </p>
-        </div>
+        <!-- AI総評エリア -->
+        <% if session[:ai_summary].present? %>
+          <% ai_summary = JSON.parse(session[:ai_summary]) %>
+          <div class="mt-4" style="margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <h3 style="font-weight: 700; font-size: 1.125rem;">🤖 AI総評</h3>
+              <span style="font-size: 0.75rem; opacity: 0.8;">
+                <%= session[:ai_summary_period] %>日間の分析
+                <% if session[:ai_summary_generated_at] %>
+                  （<%= Time.parse(session[:ai_summary_generated_at]).strftime('%m/%d %H:%M') %>生成）
+                <% end %>
+              </span>
+            </div>
+            
+            <!-- Summary -->
+            <div style="padding: 1rem; background-color: rgba(255,255,255,0.15); border-radius: 0.5rem; margin-bottom: 1rem;">
+              <p style="line-height: 1.7; opacity: 0.95;"><%= ai_summary['summary'] %></p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+              <!-- Growth Points -->
+              <% if ai_summary['growth_points']&.any? %>
+                <div style="padding: 1rem; background-color: rgba(16, 185, 129, 0.2); border-radius: 0.5rem;">
+                  <div style="font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    成長ポイント
+                  </div>
+                  <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem; opacity: 0.95;">
+                    <% ai_summary['growth_points'].each do |point| %>
+                      <li style="margin-bottom: 0.25rem;"><%= point %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+              
+              <!-- Improvement Areas -->
+              <% if ai_summary['improvement_areas']&.any? %>
+                <div style="padding: 1rem; background-color: rgba(245, 158, 11, 0.2); border-radius: 0.5rem;">
+                  <div style="font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    改善ポイント
+                  </div>
+                  <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem; opacity: 0.95;">
+                    <% ai_summary['improvement_areas'].each do |area| %>
+                      <li style="margin-bottom: 0.25rem;"><%= area %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+            </div>
+            
+            <!-- Future Advice -->
+            <% if ai_summary['future_advice'].present? %>
+              <div style="padding: 1rem; background-color: rgba(79, 70, 229, 0.2); border-radius: 0.5rem; border-left: 4px solid rgba(255,255,255,0.5);">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">💡 今後のアドバイス</div>
+                <p style="font-size: 0.875rem; opacity: 0.95; line-height: 1.6; margin: 0;"><%= ai_summary['future_advice'] %></p>
+              </div>
+            <% end %>
+            
+            <%= button_to "AI総評をクリア", clear_ai_summary_path, method: :delete, class: "btn btn-outline btn-sm", style: "margin-top: 0.75rem; font-size: 0.75rem; padding: 0.375rem 0.75rem; background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);" %>
+          </div>
+        <% else %>
+          <!-- AI総評生成ボタン -->
+          <div class="mt-4 p-3" style="margin-top: 1rem; padding: 0.75rem; background-color: rgba(255,255,255,0.1); border-radius: 0.5rem; border: 1px dashed rgba(255,255,255,0.3);">
+            <p class="text-sm" style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.75rem;">
+              🤖 <strong>AI総評機能</strong><br>
+              一定期間の投稿をAIが分析し、成長の軌跡と今後の課題を総評します。
+            </p>
+            
+            <% if @total_posts > 0 %>
+              <%= form_with url: generate_ai_summary_path, method: :post, local: true, style: "display: flex; flex-direction: column; gap: 0.5rem;" do |f| %>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <label style="font-size: 0.75rem; opacity: 0.9;">期間：</label>
+                  <%= f.select :period, 
+                              [["1週間", 7], ["1ヶ月", 30], ["3ヶ月", 90]], 
+                              {}, 
+                              { style: "padding: 0.375rem 0.5rem; border-radius: 0.375rem; background-color: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 0.75rem;" } %>
+                  <%= f.submit "AI総評を生成", class: "btn btn-sm", style: "font-size: 0.75rem; padding: 0.375rem 0.75rem; background-color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);" %>
+                </div>
+              <% end %>
+            <% else %>
+              <p style="font-size: 0.75rem; opacity: 0.8; margin: 0;">
+                AI総評を生成するには、AI評価済みの投稿が必要です。
+              </p>
+            <% end %>
+          </div>
+        <% end %>
       </div>
 
       <!-- Timeline -->
