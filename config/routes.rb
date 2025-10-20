@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'dashboard', to: 'dashboard#index'
   get 'analytics', to: 'dashboard#analytics'
   get 'reflection', to: 'dashboard#reflection'
+  post 'reflection/generate_summary', to: 'dashboard#generate_ai_summary', as: :generate_ai_summary
+  delete 'reflection/clear_summary', to: 'dashboard#clear_ai_summary', as: :clear_ai_summary
   
   # Posts (失敗ログ)
   resources :posts do
@@ -31,6 +33,7 @@ Rails.application.routes.draw do
     member do
       post :complete
       post :skip
+      get :incomplete_feedback
     end
   end
   
