@@ -108,6 +108,129 @@
         </div>
       <% end %>
 
+      <!-- Reflection Schedule -->
+      <% if @reminders.any? %>
+        <div class="card" style="background: linear-gradient(to bottom, rgba(79, 70, 229, 0.03), white); border: 2px solid var(--primary);">
+          <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            振り返りスケジュール
+          </h2>
+          
+          <p class="text-sm text-gray-600 mb-4" style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
+            定期的な振り返りで学びを定着させましょう。各タイミングで異なる観点からチェックします。
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <% @reminders.each do |reminder| %>
+              <div style="padding: 1rem; border-radius: 0.5rem; border: 2px solid <%= 
+                case reminder.status
+                when 'completed' then 'var(--secondary)'
+                when 'in_progress', 'ready' then 'var(--primary)'
+                else 'var(--gray-300)'
+                end %>; background-color: <%= 
+                case reminder.status
+                when 'completed' then 'rgba(16, 185, 129, 0.05)'
+                when 'in_progress', 'ready' then 'rgba(79, 70, 229, 0.05)'
+                else 'white'
+                end %>;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                      <!-- Status Icon -->
+                      <% if reminder.status == 'completed' %>
+                        <svg style="width: 1.25rem; height: 1.25rem; color: var(--secondary);" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                      <% elsif reminder.status == 'in_progress' %>
+                        <span style="font-size: 1.25rem;">🔄</span>
+                      <% elsif reminder.status == 'ready' %>
+                        <span style="font-size: 1.25rem;">🔔</span>
+                      <% else %>
+                        <svg style="width: 1.25rem; height: 1.25rem; color: var(--gray-400);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        </svg>
+                      <% end %>
+                      
+                      <span class="badge <%= 
+                        case reminder.status
+                        when 'completed' then 'badge-success'
+                        when 'in_progress', 'ready' then 'badge-primary'
+                        else 'badge-secondary'
+                        end %>" style="font-size: 0.75rem;">
+                        <%= reminder.reminder_type_name %>
+                      </span>
+                      
+                      <span class="text-sm text-gray-500" style="font-size: 0.75rem;">
+                        <%= reminder.scheduled_date.strftime('%Y/%m/%d') %>
+                      </span>
+                    </div>
+                    
+                    <!-- Status Text -->
+                    <div style="font-size: 0.875rem; color: var(--gray-700); margin-top: 0.25rem;">
+                      <% case reminder.status %>
+                      <% when 'completed' %>
+                        <span style="color: var(--secondary); font-weight: 600;">✓ 完了</span>
+                        <% if reminder.completed_at %>
+                          （<%= reminder.completed_at.strftime('%m/%d %H:%M') %>）
+                        <% end %>
+                      <% when 'in_progress' %>
+                        <span style="color: var(--primary); font-weight: 600;">進行中</span>
+                        - <%= reminder.checked_items_count %>/<%= reminder.total_items_count %> 完了（<%= reminder.completion_rate %>%）
+                      <% when 'ready' %>
+                        <span style="color: var(--primary); font-weight: 600;">振り返り可能</span>
+                        - <%= reminder.total_items_count %>項目
+                      <% else %>
+                        <span style="color: var(--gray-500);">予定</span>
+                        <% if reminder.total_items_count > 0 %>
+                          - <%= reminder.total_items_count %>項目準備済み
+                        <% else %>
+                          - チェックリスト準備中
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                  
+                  <!-- Action Button -->
+                  <div>
+                    <% if reminder.status == 'completed' %>
+                      <%= link_to reminder_path(reminder), class: "btn btn-outline btn-sm", style: "font-size: 0.75rem; padding: 0.375rem 0.75rem;" do %>
+                        <svg class="w-4 h-4" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        確認
+                      <% end %>
+                    <% elsif reminder.status == 'in_progress' || reminder.status == 'ready' %>
+                      <%= link_to reminder_path(reminder), class: "btn btn-primary btn-sm", style: "font-size: 0.75rem; padding: 0.375rem 0.75rem;" do %>
+                        <svg class="w-4 h-4" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        振り返る
+                      <% end %>
+                    <% else %>
+                      <span class="badge badge-secondary" style="font-size: 0.75rem;">待機中</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Edit Checklist Button -->
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--gray-200);">
+            <%= link_to edit_reflection_checklist_post_path(@post), class: "btn btn-outline", style: "width: 100%; justify-content: center;" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span>チェックリストを編集</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
       <!-- Post Content -->
       <div class="card">
         <h2 class="text-xl font-bold mb-4" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">

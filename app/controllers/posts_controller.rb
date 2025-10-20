@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :request_ai_evaluation]
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :request_ai_evaluation, :edit_reflection_checklist, :update_reflection_checklist]
   before_action :set_categories, only: [:new, :edit, :create, :update]
 
   def index
