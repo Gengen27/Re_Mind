@@ -12,7 +12,7 @@
     <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--gray-50); border-radius: 0.5rem;">
       <h2 style="font-weight: 600; margin-bottom: 0.5rem;">投稿：<%= @post.title %></h2>
       <p class="text-sm text-gray-600" style="font-size: 0.875rem; color: var(--gray-600);">
-        カテゴリ：<%= @post.category.name %> | 投稿日：<%= l(@post.created_at, format: :long) %>
+        カテゴリ：<%= @post.category.name %> | 投稿日：<%= @post.created_at.strftime('%Y年%m月%d日 %H:%M') %>
       </p>
     </div>
 
