@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   # Devise routes for user authentication
   devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    sessions: 'users/sessions'
+    registrations: 'user/registrations',
+    sessions: 'user/sessions'
   }
 
   # Root path
