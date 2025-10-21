@@ -17,6 +17,10 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: BASIC_AUTH_USER
+        sync: false
+      - key: BASIC_AUTH_PASSWORD
+        sync: false
 
   # データベース
   - type: postgres
@@ -40,5 +44,9 @@ services:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: OPENAI_API_KEY
+        sync: false
+      - key: BASIC_AUTH_USER
+        sync: false
+      - key: BASIC_AUTH_PASSWORD
         sync: false
 
