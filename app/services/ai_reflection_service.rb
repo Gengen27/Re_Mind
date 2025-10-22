@@ -15,9 +15,11 @@ class AiReflectionService
 
     begin
       response = request_reflection
-      response['summary']
+      # 全てのデータを返す（summary, growth_points, improvement_areas, future_advice）
+      response
     rescue StandardError => e
       Rails.logger.error "AI Reflection Error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       nil
     end
   end
