@@ -38,10 +38,10 @@ class PostsController < ApplicationController
       # AIチェックリスト生成（cause, solution, learningがある場合）
       if @post.cause.present? && @post.solution.present? && @post.learning.present?
         AiReflectionChecklistService.new(@post).generate
-        redirect_to edit_reflection_checklist_post_path(@post), notice: '投稿完了！振り返りチェックリストを確認・編集できます。'
-      else
-        redirect_to @post, notice: '失敗ログを投稿しました。'
       end
+      
+      # 投稿詳細画面にリダイレクト（AI評価結果を最初に見せる）
+      redirect_to @post, notice: '失敗ログを投稿しました。'
     else
       render :new, status: :unprocessable_entity
     end
