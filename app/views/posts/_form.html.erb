@@ -64,7 +64,7 @@
 
   <div class="form-group">
     <label class="flex items-center" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-      <%= f.check_box :auto_evaluate, { checked: true }, "1", "0" %>
+      <%= check_box_tag :auto_evaluate, "1", true %>
       <span class="text-sm text-gray-700">投稿時にAI評価を自動実行する</span>
     </label>
     <p class="text-xs text-gray-500 ml-6" style="font-size: 0.75rem; color: var(--gray-500); margin-left: 1.5rem; margin-top: 0.25rem;">
