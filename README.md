@@ -93,13 +93,13 @@ Password: 2222
 - 進捗状況の可視化
 
 ### 3. AI総評機能
-![AI総評画面](https://gyazo.com/example3.png)
+![AI総評画面](https://gyazo.com/0d2954b43bccf7f1ec9eebb3d6962a67)
 - 一定期間の投稿をAIが総合分析
 - 成長ポイントと改善点を抽出
 - パーソナライズされたアドバイスを提供
 
 ### 4. 成長の可視化
-![ダッシュボード](https://gyazo.com/example4.png)
+![ダッシュボード](https://gyazo.com/7ae1aa5d41eaa302ab0e3f69f8cb08cd)
 - スコア推移グラフで成長を確認
 - カテゴリ別の分析
 - 統計情報の表示
