@@ -87,19 +87,19 @@ https://gyazo.com/aa28f23147cc44b2342f5ddb839a6b25
 - 具体的なフィードバックコメントを提供
 
 ### 2. 自動リマインド機能
-![リマインド画面](https://gyazo.com/a00ca4a66d55a4dd17693d2dd796d321)
+https://gyazo.com/a00ca4a66d55a4dd17693d2dd796d321
 - 忘却曲線に基づく科学的な振り返り間隔
 - AI生成のチェックリストで段階的な振り返り
 - 進捗状況の可視化
 
 ### 3. AI総評機能
-![AI総評画面](https://gyazo.com/0d2954b43bccf7f1ec9eebb3d6962a67)
+https://gyazo.com/0d2954b43bccf7f1ec9eebb3d6962a67
 - 一定期間の投稿をAIが総合分析
 - 成長ポイントと改善点を抽出
 - パーソナライズされたアドバイスを提供
 
 ### 4. 成長の可視化
-![ダッシュボード](https://gyazo.com/7ae1aa5d41eaa302ab0e3f69f8cb08cd)
+https://gyazo.com/7ae1aa5d41eaa302ab0e3f69f8cb08cd
 - スコア推移グラフで成長を確認
 - カテゴリ別の分析
 - 統計情報の表示
